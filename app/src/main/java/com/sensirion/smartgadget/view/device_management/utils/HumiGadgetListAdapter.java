@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +32,8 @@
 package com.sensirion.smartgadget.view.device_management.utils;
 
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -48,9 +49,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Represents discovered or connected peripherals in a ListView
@@ -172,19 +170,19 @@ public class HumiGadgetListAdapter extends BaseAdapter {
     }
 
     static class HumiGadgetViewHolder {
-        @BindView(R.id.listitem_advertised_name)
-        TextView advertisedName;
-        @BindView(R.id.device_address)
-        TextView deviceAddress;
-        @BindView(R.id.listitem_label_rssi)
-        TextView rssiLabelTextView;
-        @BindView(R.id.listitem_value_rssi)
-        TextView rssiValueTextView;
-        @BindView(R.id.listitem_icon)
-        ImageView settingsIcon;
+
+        public TextView advertisedName;
+        public TextView deviceAddress;
+        public TextView rssiLabelTextView;
+        public TextView rssiValueTextView;
+        public ImageView settingsIcon;
 
         public HumiGadgetViewHolder(@NonNull final View view) {
-            ButterKnife.bind(this, view);
+            advertisedName = view.findViewById(R.id.listitem_advertised_name);
+            deviceAddress = view.findViewById(R.id.device_address);
+            rssiLabelTextView = view.findViewById(R.id.listitem_label_rssi);
+            rssiValueTextView = view.findViewById(R.id.listitem_value_rssi);
+            settingsIcon = view.findViewById(R.id.listitem_icon);
         }
     }
 }

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +41,9 @@ import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -79,15 +82,10 @@ import com.sensirion.smartgadget.view.MainActivity;
 import java.util.List;
 import java.util.Locale;
 
-import butterknife.BindBool;
-import butterknife.BindColor;
-import butterknife.BindDrawable;
-import butterknife.BindString;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 // TODO: Requires improved initUiElements calling behavior...
-public class ManageDeviceFragment extends ParentFragment implements GadgetListener {
+public class ManageDeviceFragment
+        extends ParentFragment
+        implements GadgetListener {
     private static final String TAG = ManageDeviceFragment.class.getSimpleName();
     public static final int UNKNOWN_BATTERY_LEVEL = -1;
     private static final int UNKNOWN_LOGGING_INTERVAL = -1;
@@ -98,71 +96,43 @@ public class ManageDeviceFragment extends ParentFragment implements GadgetListen
     private Runnable mDownloadButtonReset;
 
     // XML Resources
-    @BindBool(R.bool.is_tablet)
     boolean IS_TABLET;
-    @BindString(R.string.enable_logging)
     String ENABLE_LOGGING_STRING;
-    @BindString(R.string.label_advice_logging_enable)
     String GADGET_ENABLE_ADVICE_STRING;
-    @BindString(R.string.interval_modification)
     String INTERVAL_MODIFICATION_TITLE;
-    @BindString(R.string.interval_modification_message)
     String INTERVAL_MODIFICATION_MESSAGE;
-    @BindString(R.string.yes)
     String YES_STRING;
-    @BindString(R.string.no)
     String NO_STRING;
-    @BindString(R.string.typeface_condensed)
     String TYPEFACE_CONDENSED_LOCATION;
-    @BindString(R.string.typeface_bold)
     String TYPEFACE_BOLD_LOCATION;
 
     // XML Views
-    @BindView(R.id.dashboard_battery_bar)
     Button mBatteryBoardBoardView;
-    @BindView(R.id.dashboard_gadget_logging)
     Button mLoggingBoardBoardView;
-    @BindView(R.id.dashboard_logging_interval)
     Button mIntervalBoardView;
-    @BindView(R.id.dashboard_download_progress)
     Button mDownloadBoardView;
 
-    @BindView(R.id.manage_device_gadget_name_edit_field)
     EditText mGadgetNameEditText;
-    @BindView(R.id.manage_device_button_disconnect)
     Button mDisconnectButton;
-    @BindView(R.id.manage_device_button_logging_interval)
     Button mLoggingIntervalButton;
-    @BindView(R.id.manage_device_battery_level_value)
     TextView mBatteryLevelValue;
-    @BindView(R.id.manage_device_battery_bar)
     ProgressBar mBatteryBar;
-    @BindView(R.id.manage_device_switch_toggle_logger)
     Switch mLoggingToggle;
-    @BindView(R.id.manage_device_battery_bar_layout)
     RelativeLayout mBatteryLevelLayout;
-    @BindView(R.id.manage_device_gadget_logging_layout)
     RelativeLayout mLoggingLayout;
-    @BindView(R.id.manage_device_download_progress)
     TextView mDownloadButtonText;
-    @BindView(R.id.manage_device_download_progress_bar)
     ProgressBar mDownloadProgressBar;
-    @BindView(R.id.manage_device_gdaget_type)
     TextView mGadgetType;
-    @BindColor(R.color.sensirion_green_darkened)
+
     int mColorSensirionGreenDarkened;
-    @BindColor(R.color.yellow)
     int mColorYellow;
-    @BindColor(R.color.orange)
     int mColorOrange;
-    @BindColor(R.color.red)
     int mColorRed;
-    @BindColor(R.color.light_gray)
     int mColorLightGray;
-    @BindDrawable(R.drawable.download_progress)
     Drawable mDownloadProgressDrawable;
-    @BindColor(R.color.manage_device_button)
     ColorStateList mDeviceButtonColors;
+
+    private Context mContext;
 
     public ManageDeviceFragment() {
     }
@@ -186,10 +156,57 @@ public class ManageDeviceFragment extends ParentFragment implements GadgetListen
      */
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        IS_TABLET = mContext.getResources().getBoolean(R.bool.is_tablet);
+        TYPEFACE_CONDENSED_LOCATION = mContext.getResources().getString(R.string.typeface_condensed);
+        TYPEFACE_BOLD_LOCATION = mContext.getResources().getString(R.string.typeface_bold);
+
+        ENABLE_LOGGING_STRING = mContext.getResources().getString(R.string.enable_logging);
+        GADGET_ENABLE_ADVICE_STRING = mContext.getResources().getString(R.string.label_advice_logging_enable);
+        INTERVAL_MODIFICATION_TITLE = mContext.getResources().getString(R.string.interval_modification);
+        INTERVAL_MODIFICATION_MESSAGE = mContext.getResources().getString(R.string.interval_modification_message);
+        YES_STRING = mContext.getResources().getString(R.string.yes);
+        NO_STRING = mContext.getResources().getString(R.string.no);
+
+        mColorSensirionGreenDarkened = ContextCompat.getColor(mContext, R.color.blegadget_blue_darkened);
+        mColorYellow = ContextCompat.getColor(mContext, R.color.yellow);
+        mColorOrange = ContextCompat.getColor(mContext, R.color.orange);
+        mColorRed = ContextCompat.getColor(mContext, R.color.red);
+        mColorLightGray = ContextCompat.getColor(mContext, R.color.light_gray);
+
+        mDownloadProgressDrawable = ContextCompat.getDrawable(mContext, R.drawable.download_progress);
+        mDeviceButtonColors = ContextCompat.getColorStateList(mContext, R.color.manage_device_button);
+    }
+
+    @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_manage_device, container, false);
-        ButterKnife.bind(this, view);
+
+        mBatteryBoardBoardView = view.findViewById(R.id.dashboard_battery_bar);
+        mLoggingBoardBoardView = view.findViewById(R.id.dashboard_gadget_logging);
+        mIntervalBoardView = view.findViewById(R.id.dashboard_logging_interval);
+        mDownloadBoardView = view.findViewById(R.id.dashboard_download_progress);
+        mGadgetNameEditText = view.findViewById(R.id.manage_device_gadget_name_edit_field);
+        mDisconnectButton = view.findViewById(R.id.manage_device_button_disconnect);
+        mLoggingIntervalButton = view.findViewById(R.id.manage_device_button_logging_interval);
+        mBatteryLevelValue = view.findViewById(R.id.manage_device_battery_level_value);
+        mBatteryBar = view.findViewById(R.id.manage_device_battery_bar);
+        mLoggingToggle = view.findViewById(R.id.manage_device_switch_toggle_logger);
+        mBatteryLevelLayout = view.findViewById(R.id.manage_device_battery_bar_layout);
+        mLoggingLayout = view.findViewById(R.id.manage_device_gadget_logging_layout);
+        mDownloadButtonText = view.findViewById(R.id.manage_device_download_progress);
+        mDownloadProgressBar = view.findViewById(R.id.manage_device_download_progress_bar);
+        mGadgetType = view.findViewById(R.id.manage_device_gdaget_type);
+
         view.setOnTouchListener(new OnTouchOpenTabletMenuListener());
         setHasOptionsMenu(true);
         return view;
@@ -251,6 +268,11 @@ public class ManageDeviceFragment extends ParentFragment implements GadgetListen
         if (service instanceof BatteryService) {
             updateBatteryLevel();
         }
+    }
+
+    @Override
+    public void onGadgetDownloadDataReceived(@NonNull Gadget gadget, @NonNull GadgetDownloadService service, @NonNull GadgetValue[] values, int progress) {
+
     }
 
     @Override

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +32,7 @@
 package com.sensirion.smartgadget.utils;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.sensirion.smartgadget.R;
 

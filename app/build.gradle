@@ -1,40 +1,47 @@
 apply plugin: 'com.android.application'
-apply from: '../gradle-helpers.gradle'
-
-// Custom plugin for the Butterknife library
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-    }
-}
-apply plugin: 'com.neenbedankt.android-apt'
-// End of Custom plugins for the Butterknife library
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '24.0.2'
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
-    repositories {
-        // additional repository for androidplot
-        maven {
-            url 'https://oss.sonatype.org/content/groups/public'
+
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.sensirion.smartgadget"
+
+        minSdkVersion 30
+        //noinspection EditedTargetSdkVersion
+        targetSdkVersion 34
+
+        versionName "1.0.0"
+        versionCode 1
+
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_11
+            targetCompatibility JavaVersion.VERSION_11
         }
-        maven {
-            url 'https://maven.google.com'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
         }
     }
-    dependencies {
-        compile 'com.sensirion:libble:2.1.7'
-        compile 'com.sensirion:libsmartgadget:1.1.7'
-        compile 'com.android.support:appcompat-v7:23.4.0'
-        compile 'com.androidplot:androidplot-core:1.5.2'
-        compile 'com.jakewharton:butterknife:8.1.0'
-        apt 'com.jakewharton:butterknife-compiler:8.1.0'
-    }
+}
+
+dependencies {
+    implementation project(":libble")
+    implementation project(":libsmartgadget")
+
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
+
+    compileOnly("com.google.auto.service:auto-service-annotations:1.0")
+    annotationProcessor("com.google.auto.service:auto-service:1.0")
+
+    implementation 'androidx.annotation:annotation:1.5.0'
+
+    implementation "androidx.fragment:fragment:1.6.2"
+    implementation "androidx.fragment:fragment-ktx:1.6.2"
+    implementation "com.google.android.material:material:1.6.0"
+    implementation "androidx.legacy:legacy-support-v13:1.0.0"
+    implementation "androidx.appcompat:appcompat:1.4.1"
+    implementation 'com.androidplot:androidplot-core:1.5.10'
 }

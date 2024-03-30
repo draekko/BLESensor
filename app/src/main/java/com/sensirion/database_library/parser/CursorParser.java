@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +32,8 @@
 package com.sensirion.database_library.parser;
 
 import android.database.Cursor;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 
 public abstract class CursorParser {

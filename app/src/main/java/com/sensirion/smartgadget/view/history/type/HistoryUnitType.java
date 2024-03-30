@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,10 +33,10 @@ package com.sensirion.smartgadget.view.history.type;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import com.sensirion.smartgadget.R;
 import com.sensirion.smartgadget.utils.Settings;

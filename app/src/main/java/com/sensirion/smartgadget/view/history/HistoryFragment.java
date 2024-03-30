@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,8 +39,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,11 +72,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import butterknife.BindInt;
-import butterknife.BindString;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class HistoryFragment extends ParentFragment
         implements RHTSensorListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -90,23 +86,15 @@ public class HistoryFragment extends ParentFragment
     private static final HistoryIntervalType DEFAULT_TIME_INTERVAL = HistoryIntervalType.INTERVAL_OF_10_MINUTES;
 
     // Injected application Views
-    @BindView(R.id.history_plot_container)
     LinearLayout mContainer;
-    @BindView(R.id.history_device_nested_list_view)
     ListView mDeviceListView;
-    @BindView(R.id.history_interval_tabs)
     LinearLayout mIntervalTabs;
-    @BindView(R.id.history_type_of_value_tabs)
     LinearLayout mValueTabs;
-    @BindView(R.id.history_fragment_plot)
     XYPlot mPlot;
 
     // Extracted constants from the XML resources
-    @BindInt(R.integer.history_fragment_value_tabs_text_size)
     int VALUE_TABS_TEXT_SIZE;
-    @BindInt(R.integer.history_fragment_interval_tabs_text_size)
     int INTERVAL_TABS_TEXT_SIZE;
-    @BindString(R.string.typeface_bold)
     String TYPEFACE_BOLD_LOCATION;
 
     // Selected plot parameters
@@ -128,12 +116,35 @@ public class HistoryFragment extends ParentFragment
     private int mLastIntervalPosition = 0;
     private int mLastUnitPosition = 0;
 
+    private Context mContext;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        VALUE_TABS_TEXT_SIZE = mContext.getResources().getInteger(R.integer.history_fragment_value_tabs_text_size);
+        INTERVAL_TABS_TEXT_SIZE = mContext.getResources().getInteger(R.integer.history_fragment_interval_tabs_text_size);
+        TYPEFACE_BOLD_LOCATION = mContext.getResources().getString(R.string.typeface_bold);
+    }
+
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         final View historyView = inflater.inflate(R.layout.fragment_history, container, false);
-        unbinder = ButterKnife.bind(this, historyView);
+
+        mContainer = historyView.findViewById(R.id.history_plot_container);
+        mDeviceListView = historyView.findViewById(R.id.history_device_nested_list_view);
+        mIntervalTabs = historyView.findViewById(R.id.history_interval_tabs);
+        mValueTabs = historyView.findViewById(R.id.history_type_of_value_tabs);
+        mPlot = historyView.findViewById(R.id.history_fragment_plot);
+
         init(historyView);
         mPlot.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,7 +180,7 @@ public class HistoryFragment extends ParentFragment
         initHistoryDeviceListView();
         refreshTypeValueTabs();
         updateDeviceView();
-        mPlotHandler = new PlotHandler(historyView, DEFAULT_TIME_INTERVAL, DEFAULT_UNIT_TYPE);
+        mPlotHandler = new PlotHandler(mContext, historyView, DEFAULT_TIME_INTERVAL, DEFAULT_UNIT_TYPE);
         updateGraph();
     }
 

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,8 +42,8 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.Region;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -179,7 +180,7 @@ public class XyPlotView extends View {
         mComfortZonePaint.setStyle(Paint.Style.STROKE);
         mComfortZonePaint.setStrokeWidth(getResources().getInteger(R.integer.comfort_zone_stroke_size_boundary));
         mComfortZonePaint.setAntiAlias(true);
-        mComfortZonePaint.setColor(getResources().getColor(R.color.sensirion_green));
+        mComfortZonePaint.setColor(getResources().getColor(R.color.blegadget_blue));
 
         // Background
         mBackgroundBitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.img_background_overlay);

@@ -37,7 +37,7 @@
         android:padding="16dp"
         android:scaleType="center"
         android:text="@string/requirements_url"
-        android:textColor="@color/sensirion_green"
+        android:textColor="@color/blegadget_blue"
         android:textSize="@dimen/text_default"/>
 
     <FrameLayout

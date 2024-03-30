@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/history_fragment_tabs_layout_height"
             android:layout_marginBottom="@dimen/history_fragment_tabs_margin_bottom"
-            android:background="@color/sensirion_green"
+            android:background="@color/blegadget_blue"
             android:divider="@color/font_shadow"
             android:orientation="horizontal" />
 
@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/history_fragment_tabs_layout_height"
             android:layout_marginBottom="@dimen/history_fragment_tabs_margin_bottom"
-            android:background="@color/sensirion_grey_light"
+            android:background="@color/blegadget_grey_light"
             android:divider="@color/font_shadow"
             android:orientation="horizontal" />
 

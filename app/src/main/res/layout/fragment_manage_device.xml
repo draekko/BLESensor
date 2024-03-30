@@ -152,7 +152,7 @@
                 android:layout_gravity="end"
                 android:layout_marginEnd="10dp"
                 android:layout_marginStart="8dp"
-                android:background="@color/sensirion_grey_light"
+                android:background="@color/blegadget_grey_light"
                 android:text="@string/label_interval_second_singular"
                 android:textColor="@color/light_gray"
                 android:textSize="@dimen/dashboard_button_text_size"

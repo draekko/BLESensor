@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,8 +33,8 @@ package com.sensirion.smartgadget.peripheral.rht_sensor.external;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.sensirion.libsmartgadget.Gadget;
@@ -44,6 +45,7 @@ import com.sensirion.libsmartgadget.GadgetManager;
 import com.sensirion.libsmartgadget.GadgetManagerCallback;
 import com.sensirion.libsmartgadget.GadgetService;
 import com.sensirion.libsmartgadget.GadgetValue;
+import com.sensirion.libsmartgadget.smartgadget.BTHomeTuyaTemperatureHumidtyService;
 import com.sensirion.libsmartgadget.smartgadget.GadgetManagerFactory;
 import com.sensirion.libsmartgadget.smartgadget.SHT3xHumidityService;
 import com.sensirion.libsmartgadget.smartgadget.SHT3xTemperatureService;
@@ -57,13 +59,15 @@ import com.sensirion.smartgadget.persistence.history_database.HistoryDatabaseMan
 import com.sensirion.smartgadget.utils.DeviceModel;
 import com.sensirion.smartgadget.utils.view.ColorManager;
 
+import java.sql.Date;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class RHTHumigadgetSensorManager implements GadgetManagerCallback, GadgetListener {
+public class RHTHumigadgetSensorManager
+        implements GadgetManagerCallback, GadgetListener {
 
     private static final String TAG = RHTHumigadgetSensorManager.class.getSimpleName();
 
@@ -79,12 +83,20 @@ public class RHTHumigadgetSensorManager implements GadgetManagerCallback, Gadget
     // TODO: find a better way to filter devices, right now we have to register the service UUID
     // and then still enter the exact device names here. Better would be to keep everything within
     // libsmartgadget.
-    private String[] mHumiGadgetNameFilter = new String[]{"SHTC1 smart gadget",
-            "SHTC1 smart gadget\u0002", "Smart Humigadget", "SensorTag"};
-    private String[] mHumiGadgetServiceUUIDFilter = new String[]{SHT3xTemperatureService.SERVICE_UUID,
+    private String[] mHumiGadgetNameFilter = new String[]{
+            "Tuya BtHome Temperature & Humidity",
+            "SHTC1 smart gadget",
+            "SHTC1 smart gadget\u0002",
+            "Smart Humigadget",
+            "SensorTag"
+    };
+    private String[] mHumiGadgetServiceUUIDFilter = new String[]{
+            BTHomeTuyaTemperatureHumidtyService.SERVICE_UUID,
+            SHT3xTemperatureService.SERVICE_UUID,
             SHT3xHumidityService.SERVICE_UUID,
             SHTC1TemperatureAndHumidityService.SERVICE_UUID,
-            SensorTagTemperatureAndHumidityService.SERVICE_UUID};
+            SensorTagTemperatureAndHumidityService.SERVICE_UUID
+    };
 
     private RHTHumigadgetSensorManager(@NonNull final Context context) {
         mGadgetManager = GadgetManagerFactory.create(this);
@@ -299,7 +311,6 @@ public class RHTHumigadgetSensorManager implements GadgetManagerCallback, Gadget
     @Override
     public void onGadgetDisconnected(@NonNull final Gadget gadget) {
         mConnectedGadgets.remove(gadget.getAddress());
-
         notifyGadgetConnectionChanged(gadget, false);
     }
 
@@ -307,7 +318,27 @@ public class RHTHumigadgetSensorManager implements GadgetManagerCallback, Gadget
     public void onGadgetValuesReceived(@NonNull final Gadget gadget,
                                        @NonNull final GadgetService service,
                                        @NonNull final GadgetValue[] values) {
+        if (service.getClass().getCanonicalName().contains("BTHomeTuyaTemperatureHumidtyService")) {
+            if (false) {
+                Log.d(TAG, "=================================================");
+                Log.d(TAG, gadget.getName() + " " + gadget.getAddress() + " " + gadget.isConnected());
+                Log.d(TAG, service.getClass().getCanonicalName());
+                Log.d(TAG, "VALUES " + values.length);
+                for (GadgetValue gadgetValue: values) {
+                    Log.d(TAG, gadgetValue.getTimestamp() + " " + gadgetValue.getValue() + gadgetValue.getUnit());
+                }
+                Log.d(TAG, "=================================================");
+            }
+            RHTDataPoint rhtDataPoint = new RHTDataPoint(values[0].getValue().floatValue(), values[1].getValue().floatValue(), System.currentTimeMillis());
+            notifyRHTDataPoint(gadget.getAddress(), rhtDataPoint, false);
+        }
+
         // Ignore... This is currently only used by the battery service
+    }
+
+    @Override
+    public void onGadgetDownloadDataReceived(@NonNull Gadget gadget, @NonNull GadgetDownloadService service, @NonNull GadgetValue[] values, int progress) {
+
     }
 
     @Override
@@ -409,7 +440,9 @@ public class RHTHumigadgetSensorManager implements GadgetManagerCallback, Gadget
 
     public boolean startDiscovery(final int durationMs) {
         mDiscoveredGadgets.clear();
-        return mGadgetManager.startGadgetDiscovery(durationMs, mHumiGadgetNameFilter,
+        return mGadgetManager.startGadgetDiscovery(
+                durationMs,
+                mHumiGadgetNameFilter,
                 mHumiGadgetServiceUUIDFilter);
     }
 

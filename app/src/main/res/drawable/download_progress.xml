@@ -3,7 +3,7 @@
 
     <!-- Define the background properties like color etc -->
     <item android:id="@android:id/background">
-        <color android:color="@color/sensirion_grey_light"/>
+        <color android:color="@color/blegadget_grey_light"/>
     </item>
 
     <!-- Define the progress properties like start color, end color etc -->
@@ -14,10 +14,10 @@
 
                 <gradient
                     android:angle="90"
-                    android:centerColor="@color/sensirion_green"
+                    android:centerColor="@color/blegadget_blue"
                     android:centerY="0.4"
-                    android:endColor="@color/sensirion_green_darkened"
-                    android:startColor="@color/sensirion_green_darkened"/>
+                    android:endColor="@color/blegadget_blue_darkened"
+                    android:startColor="@color/blegadget_blue_darkened"/>
             </shape>
         </clip>
     </item>

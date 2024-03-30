@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/scanning_help_title"
-                android:textColor="@color/sensirion_green_darkened"
+                android:textColor="@color/blegadget_blue_darkened"
                 android:textSize="@dimen/dashboard_connected_peripheral_item_text_size"
                 android:textStyle="bold"/>
 

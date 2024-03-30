@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,25 +33,18 @@ package com.sensirion.smartgadget.utils.view;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ListFragment;
-
-import butterknife.Unbinder;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.ListFragment;
 
 public abstract class ParentListFragment extends ListFragment {
 
     @Nullable
     protected Activity mActivity = null;
-    @Nullable
-    protected Unbinder unbinder = null;
 
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
-        if (!Activity.class.isInstance(context)) {
-            throw new RuntimeException("Must attach an Activity");
-        }
-        mActivity = (Activity) context;
+        mActivity = getActivity();
     }
 
     @Override
@@ -62,9 +56,6 @@ public abstract class ParentListFragment extends ListFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (unbinder != null) {
-            unbinder.unbind();
-        }
     }
 
     /**

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Smart Gadget</string>
-    <string name="app_platform">for Android</string>
+    <string name="app_name">BLE Sensor</string>
 
     <!-- Database names -->
-    <string name="user_name_database">smartgadget.db</string>
-    <string name="user_name_database_test">smartgadget_test.db</string>
-    <string name="history_database">history_smartgadget.db</string>
-    <string name="history_database_test">history_smartgadget_test.db</string>
+    <string name="user_name_database">ble_sensor.db</string>
+    <string name="user_name_database_test">ble_sensor_test.db</string>
+    <string name="history_database">history_ble_sensor.db</string>
+    <string name="history_database_test">history_ble_sensor_test.db</string>
 
     <!-- Section tittles -->
     <string name="title_page_dashboard">Dashboard</string>
@@ -22,7 +21,7 @@
     <string name="header_connections">Connections</string>
     <string name="header_user_prefs">User Preferences</string>
     <string name="header_app_information">App Information</string>
-    <string name="label_smart_gadgets">Smart Gadgets</string>
+    <string name="label_smart_gadgets">BLE Sensors</string>
     <string name="label_season">Season</string>
     <string name="label_temperature_unit">Temperature Unit</string>
     <string name="label_glossary">Glossary</string>
@@ -48,9 +47,9 @@
     <!-- About -->
     <string name="txt_about_char_copyright">\u00A9</string>
     <!-- © -->
-    <string name="about_sensirion_ag">Copyright Sensirion AG, Switzerland</string>
+    <string name="about_sensirion_ag">Copyright Sensirion AG (Switzerland), Draekko RAND</string>
     <!-- ScanDeviceFragment -->
-    <string name="label_devicescan">SmartGadget Scan</string>
+    <string name="label_devicescan">BLESensor Scan</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_stop">Stop</string>
     <!-- 'Type: ' -->
@@ -135,14 +134,14 @@
     <string name="label_details">Details</string>
     <string name="label_batteryLevel">Battery</string>
     <string name="label_battery_loading">Loading…</string>
-    <string name="label_gadgetName">Gadget name</string>
+    <string name="label_gadgetName">Sensor name</string>
     <string name="label_loggingInterval">Logging Interval</string>
     <string name="label_logging_interval_updating">Updating…</string>
     <string name="label_gadgetLogging">Logging</string>
     <string name="label_disconnect">Disconnect</string>
     <string name="label_downloading">Downloading </string>
 
-    <string name="label_advice_logging_enable">Enabling logging discards all the data currently stored on the Smart Gadget. Do you want to continue?</string>
+    <string name="label_advice_logging_enable">Enabling logging discards all the data currently stored on the BLE Sensor. Do you want to continue?</string>
     <string name="label_advice_interval_modification">Modifying interval will delete all currently stored data.</string>
 
     <string name="label_interval_second_singular">1 second</string>
@@ -201,35 +200,35 @@
     <string name="manage_device_download_completed">Download completed</string>
 
     <!-- Requirements dialog -->
-    <string name="requirements_title">Sensirion SmartGadget Required</string>
-    <string name="requirements_text">This application requires a Sensirion SmartGadget in order to work.</string>
-    <string name="requirements_url">https://www.sensirion.com/gadget/</string>
+    <string name="requirements_title">BLE Sensor Required</string>
+    <string name="requirements_text">This application requires a BLE Sensor in order to work (Sensiron Smart Gadget or Tuya BThome with pvvx firmware).</string>
+    <string name="requirements_url">https://github.com/draekko-rand/blesensor</string>
     <string name="requirements_show_next_launch">Show on next launch</string>
 
     <!--Privacy Policy Dialog-->
     <string name="policy_title">Privacy Policy</string>
-    <string name="policy_text_1">Last update: March 15th, 2017\n\nSensirion AG designs products and tools that allow measuring and tracking of environmental data like temperature and humidity to provide users with insight about their environmental conditions. This privacy policy applies to the Sensirion Smart Gadget (“Device”) and the Sensirion Smart Gadget mobile application thereto (“App”).\n\nThe Device allows tracking of the environmental data temperature and humidity. These data are saved locally onto the Device. The Device has a Bluetooth Low Energy (BLE) module which – when switched on - allows other Bluetooth enabled devices in the vicinity to connect to the Device and show current measured values as well as download saved data.\n\nThe Sensirion App allows the user to connect a mobile phone or tablet to the Device and show current measured values as well as download saved data. In order to connect an Android mobile phone or tablet to a Device via BLE, Android demands turning on the location services and providing to the app access to location data. This is a general Android/BLE demand to allow scanning for nearby devices, independent of whether or not location data are used.</string>
+    <string name="policy_text_1">Last update: March 15th, 2017\n\nSensirion AG designs products and tools that allow measuring and tracking of environmental data like temperature and humidity to provide users with insight about their environmental conditions. This privacy policy applies to the Sensirion BLE Sensor (“Device”) and the Sensirion BLE Sensor mobile application thereto (“App”).\n\nThe Device allows tracking of the environmental data temperature and humidity. These data are saved locally onto the Device. The Device has a Bluetooth Low Energy (BLE) module which – when switched on - allows other Bluetooth enabled devices in the vicinity to connect to the Device and show current measured values as well as download saved data.\n\nThe Sensirion App allows the user to connect a mobile phone or tablet to the Device and show current measured values as well as download saved data. In order to connect an Android mobile phone or tablet to a Device via BLE, Android demands turning on the location services and providing to the app access to location data. This is a general Android/BLE demand to allow scanning for nearby devices, independent of whether or not location data are used.</string>
     <string name="policy_text_2">Sensirion does not collect, use, save, track or share your location data in any form, nor does Sensirion collect, use, save, track or share other personal data through the App.</string>
     <string name="policy_text_contact_text">You can contact us for any questions or comments at:</string>
     <string name="policy_text_contact_email">info@sensirion.com</string>
     <string name="policy_url">https://www.sensirion.com/privacy-policy</string>
 
     <!--Scanning Info-->
-    <string name="scanning_help_title">Can\'t find your gadget?</string>
+    <string name="scanning_help_title">Can\'t find your sensor?</string>
     <string name="scanning_help_bullet_point">-</string>
-    <string name="scanning_help_proximity_title">Get close to your Smart Gadget</string>
-    <string name="scanning_help_proximity_description">Make sure to be in close proximity of your Smart Gadget.</string>
-    <string name="scanning_help_gadget_ble_title">Enable BLE on the SmartGadget</string>
-    <string name="scanning_help_gadget_ble_description">To enable BLE on the Smart Gadget, press and hold the button on the gadget for 3 seconds.</string>
+    <string name="scanning_help_proximity_title">Get close to your BLE Sensor</string>
+    <string name="scanning_help_proximity_description">Make sure to be in close proximity of your BLE Sensor.</string>
+    <string name="scanning_help_gadget_ble_title">Enable BLE on the BLESensor</string>
+    <string name="scanning_help_gadget_ble_description">To enable BLE on the BLE Sensor, press and hold the button on the device for 3 seconds.</string>
     <string name="scanning_help_location_title">Enable location services</string>
     <string name="scanning_help_location_description">Android requires location permissions to scan for BLE devices. The application does not use or track your location.</string>
-    <string name="scanning_help_pairing_title">Let this app pair with the Smart Gadget</string>
+    <string name="scanning_help_pairing_title">Let this app pair with the BLE Sensor</string>
     <string name="scanning_help_pairing_description">To ensure seamless functionality, do not use the system\'s bluetooth settings to pair.</string>
 
     <string name="dialog_unbind_gadget_title">Inconsistent pairing state</string>
-    <string name="dialog_unbind_gadget_message">Go to the bluetooth settings and remove the gadget from the list of paired devices before connecting within this app.\n</string>
+    <string name="dialog_unbind_gadget_message">Go to the bluetooth settings and remove the device from the list of paired devices before connecting within this app.\n</string>
 
     <string name="dialog_phone_setup_location_title">Phone Setup</string>
-    <string name="dialog_phone_setup_location_message">Location Services are needed to scan for nearby Smart Gadget devices. Location data are not saved or shared by the App.</string>
-    <string name="find_your_smart_gadget">Find your Smart Gadget</string>
+    <string name="dialog_phone_setup_location_message">Location Services are needed to scan for nearby BLE Sensor devices. Location data are not saved or shared by the App.</string>
+    <string name="find_your_smart_gadget">Find your BLE Sensor</string>
 </resources>

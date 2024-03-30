@@ -16,7 +16,7 @@
                     android:centerColor="@color/yellow"
                     android:centerY="0.7"
                     android:endColor="@color/red"
-                    android:startColor="@color/sensirion_green"
+                    android:startColor="@color/blegadget_blue"
                     />
             </shape>
         </clip>

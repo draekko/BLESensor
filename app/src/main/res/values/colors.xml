@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <color name="sensirion_green">#FF81C12D</color>
-    <color name="sensirion_grey_light">#FFE9E4E0</color>
-    <color name="sensirion_grey_dark">#FFBCB0A7</color>
-    <color name="sensirion_green_darkened">#6ba124</color>
+    <color name="blegadget_blue">#24B1E1</color>
+    <color name="blegadget_grey_light">#E9E4E0</color>
+    <color name="blegadget_grey_dark">#BCB0A7</color>
+    <color name="blegadget_blue_darkened">#2481fa</color>
 
     <!--Manage Device-->
     <color name="light_gray">#d2ccc7</color>

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +32,8 @@
 package com.sensirion.smartgadget.view.preference.adapter;
 
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -44,8 +45,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class PreferenceAdapter extends BaseAdapter {
 
@@ -142,13 +141,13 @@ public class PreferenceAdapter extends BaseAdapter {
     }
 
     static class PreferenceViewHolder {
-        @BindView(R.id.preference_summary)
-        TextView summaryTextView;
-        @BindView(R.id.preference_title)
-        TextView titleTextView;
+
+        public TextView summaryTextView;
+        public TextView titleTextView;
 
         PreferenceViewHolder(@NonNull final View view) {
-            ButterKnife.bind(this, view);
+            summaryTextView = view.findViewById(R.id.preference_summary);
+            titleTextView = view.findViewById(R.id.preference_title);
         }
     }
 

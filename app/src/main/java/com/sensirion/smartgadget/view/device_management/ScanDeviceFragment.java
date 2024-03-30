@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,8 +40,8 @@ import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -70,43 +71,29 @@ import com.sensirion.smartgadget.view.device_management.utils.HumiGadgetListAdap
 import java.lang.reflect.Method;
 import java.util.Set;
 
-import butterknife.BindBool;
-import butterknife.BindString;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
  * Holds all the UI elements needed for showing the devices in range in a list
  */
 public class ScanDeviceFragment extends ParentListFragment implements HumiGadgetConnectionStateListener {
     private static final String TAG = ScanDeviceFragment.class.getSimpleName();
 
-    private static final int SCAN_DISCOVERY_TIME_MS = 10000;
-    private static final int CONNECTING_DIALOG_DISMISS_TIME_MS = 2000;
+    private static final int TIME_MS = 1000;
+    private static final int SCAN_DISCOVERY_TIME_MS = 10 * TIME_MS;
+    private static final int CONNECTING_DIALOG_DISMISS_TIME_MS = 2 * TIME_MS;
 
     // Resources extracted from the resources folder
-    @BindString(R.string.label_connected)
     String CONNECTED_STRING;
-    @BindString(R.string.label_discovered)
     String DISCOVERED_STRING;
-    @BindString(R.string.typeface_condensed)
     String TYPEFACE_CONDENSED_LOCATION;
-    @BindString(R.string.typeface_bold)
     String TYPEFACE_BOLD_LOCATION;
-    @BindString(R.string.connecting_title)
     String PLEASE_WAIT_STRING;
-    @BindString(R.string.connecting_to_device_prefix)
     String CONNECTING_TO_DEVICE_PREFIX;
-    @BindBool(R.bool.is_tablet)
     boolean IS_TABLET;
 
     // Injected views
-    @BindView(R.id.scan_background)
     FrameLayout mBackground;
-    @BindView(R.id.togglebutton_scan)
     ToggleButton mScanToggleButton;
 
-    @BindView(R.id.scanning_info_container)
     ScrollView mScanInfoContainer;
 
     // Block Dialogs
@@ -122,17 +109,39 @@ public class ScanDeviceFragment extends ParentListFragment implements HumiGadget
     private Menu mOptionsMenu;
     private RHTHumigadgetSensorManager mHumiGadgetSensorManager;
 
+    private Context mContext;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        IS_TABLET = mContext.getResources().getBoolean(R.bool.is_tablet);
+        CONNECTED_STRING = mContext.getResources().getString(R.string.label_connected);
+        DISCOVERED_STRING = mContext.getResources().getString(R.string.label_discovered);
+        TYPEFACE_CONDENSED_LOCATION = mContext.getResources().getString(R.string.typeface_condensed);
+        TYPEFACE_BOLD_LOCATION = mContext.getResources().getString(R.string.typeface_bold);
+        PLEASE_WAIT_STRING = mContext.getResources().getString(R.string.connecting_title);
+        CONNECTING_TO_DEVICE_PREFIX = mContext.getResources().getString(R.string.connecting_to_device_prefix);
+    }
+
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_device_scan, container, false);
 
-        unbinder = ButterKnife.bind(this, rootView);
+        final Typeface typefaceNormal = Typeface.createFromAsset(mContext.getAssets(), TYPEFACE_CONDENSED_LOCATION);
+        final Typeface typefaceBold = Typeface.createFromAsset(mContext.getAssets(), TYPEFACE_BOLD_LOCATION);
 
-        final AssetManager assets = getContext().getAssets();
-        final Typeface typefaceNormal = Typeface.createFromAsset(assets, TYPEFACE_CONDENSED_LOCATION);
-        final Typeface typefaceBold = Typeface.createFromAsset(assets, TYPEFACE_BOLD_LOCATION);
+        mBackground = rootView.findViewById(R.id.scan_background);
+        mScanToggleButton = rootView.findViewById(R.id.togglebutton_scan);
+        mScanInfoContainer = rootView.findViewById(R.id.scanning_info_container);
 
         initListAdapter(typefaceNormal, typefaceBold);
         initToggleButton(typefaceBold);
@@ -241,22 +250,26 @@ public class ScanDeviceFragment extends ParentListFragment implements HumiGadget
     }
 
     private boolean unbindGadgetIfBoundByDevice(final GadgetModel gadget) {
-        final BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();
-        final Set<BluetoothDevice> bondedDevices = defaultAdapter.getBondedDevices();
-        for (final BluetoothDevice device : bondedDevices) {
-            if (gadget.getAddress().equals(device.getAddress())) {
-                Log.d(TAG, device.getAddress() + " bound in device settings... will unbind");
-                try {
-                    Method m = device.getClass()
-                            .getMethod("removeBond", (Class[]) null);
-                    m.invoke(device, (Object[]) null);
-                } catch (Exception e) {
-                    Log.e(TAG, "Failed to unbind from gadget");
-                    return false;
+        try {
+            final BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();
+            final Set<BluetoothDevice> bondedDevices = defaultAdapter.getBondedDevices();
+            for (final BluetoothDevice device : bondedDevices) {
+                if (gadget.getAddress().equals(device.getAddress())) {
+                    Log.d(TAG, device.getAddress() + " bound in device settings... will unbind");
+                    try {
+                        Method m = device.getClass()
+                                  .getMethod("removeBond", (Class[]) null);
+                        m.invoke(device, (Object[]) null);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to unbind from gadget");
+                        return false;
+                    }
                 }
             }
+            return true;
+        } catch (SecurityException e) {
+            return false;
         }
-        return true;
     }
 
     @Override

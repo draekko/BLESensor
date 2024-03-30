@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/dashboard_connected_peripheral_item_layout_height"
-    android:background="@color/sensirion_grey_light"
+    android:background="@color/blegadget_grey_light"
     android:gravity="center_horizontal">
 
     <ImageView

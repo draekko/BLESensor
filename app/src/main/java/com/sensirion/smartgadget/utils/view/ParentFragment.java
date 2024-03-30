@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,10 +34,8 @@ package com.sensirion.smartgadget.utils.view;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-
-import butterknife.Unbinder;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 public abstract class ParentFragment extends Fragment {
 
@@ -43,8 +43,6 @@ public abstract class ParentFragment extends Fragment {
 
     @Nullable
     protected Activity mActivity = null;
-    @Nullable
-    protected Unbinder unbinder = null;
 
     @Override
     public void onAttach(final Context context) {
@@ -64,9 +62,6 @@ public abstract class ParentFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (unbinder != null) {
-            unbinder.unbind();
-        }
     }
 
     /**

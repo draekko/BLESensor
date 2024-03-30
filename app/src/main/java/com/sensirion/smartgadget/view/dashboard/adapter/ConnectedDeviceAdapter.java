@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,9 +32,9 @@
 package com.sensirion.smartgadget.view.dashboard.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -46,8 +47,6 @@ import com.sensirion.smartgadget.utils.Settings;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class ConnectedDeviceAdapter extends ArrayAdapter<DeviceModel> {
 
@@ -89,15 +88,14 @@ public class ConnectedDeviceAdapter extends ArrayAdapter<DeviceModel> {
     }
 
     static class DashboardViewHolder {
-        @BindView(R.id.item_gadget_displayname)
-        TextView titleView;
-        @BindView(R.id.item_gadget_color)
-        ImageView colorView;
-        @BindView(R.id.item_icon)
-        ImageView itemIcon;
+        public TextView titleView;
+        public ImageView colorView;
+        public ImageView itemIcon;
 
         DashboardViewHolder(@NonNull final View view) {
-            ButterKnife.bind(this, view);
+            titleView = view.findViewById(R.id.item_gadget_displayname);
+            colorView = view.findViewById(R.id.item_gadget_color);
+            itemIcon = view.findViewById(R.id.item_icon);
         }
     }
 }

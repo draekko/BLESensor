@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,8 +33,8 @@ package com.sensirion.smartgadget.view.history.adapter;
 
 import android.content.Context;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,9 +48,6 @@ import com.sensirion.smartgadget.utils.view.ColorManager;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class HistoryDeviceAdapter extends ArrayAdapter<DeviceModel> {
 
@@ -189,17 +187,14 @@ public class HistoryDeviceAdapter extends ArrayAdapter<DeviceModel> {
 
     static class DeviceViewHolder {
 
-        @BindView(R.id.item_gadget_displayname)
-        TextView title;
-
-        @BindView(R.id.item_icon)
-        ImageView icon;
-
-        @BindView(R.id.item_gadget_color)
-        ImageView color;
+        public TextView title;
+        public ImageView icon;
+        public ImageView color;
 
         public DeviceViewHolder(@NonNull final View view) {
-            ButterKnife.bind(this, view);
+            title = view.findViewById(R.id.item_gadget_displayname);
+            icon = view.findViewById(R.id.item_icon);
+            color = view.findViewById(R.id.item_gadget_color);
         }
     }
 }

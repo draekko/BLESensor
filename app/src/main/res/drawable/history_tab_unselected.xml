@@ -8,7 +8,7 @@
     android:shape="rectangle">
     <gradient
         android:angle="-90"
-        android:centerColor="@color/sensirion_grey_light"
-        android:endColor="@color/sensirion_grey_light"
+        android:centerColor="@color/blegadget_grey_light"
+        android:endColor="@color/blegadget_grey_light"
         android:startColor="@color/background_light" />
 </shape>

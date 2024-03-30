@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,14 +33,15 @@ package com.sensirion.smartgadget.view.dashboard;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,12 +70,10 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
-import butterknife.BindBool;
-import butterknife.BindString;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-public class DashboardFragment extends ParentFragment implements RHTSensorListener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class DashboardFragment extends ParentFragment
+        implements
+            RHTSensorListener,
+            SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = DashboardFragment.class.getSimpleName();
 
@@ -88,47 +88,27 @@ public class DashboardFragment extends ParentFragment implements RHTSensorListen
     private static final String BUTTON_VALUE_FORMAT = "%s%s %s";
 
     //VIEWS
-    @BindView(R.id.dashboard_content_layout)
     ScrollView mTotalView;
-    @BindView(R.id.dashboard_connected_device_nested_list_view)
     ListView mConnectedDeviceView;
-    @BindView(R.id.dashboard_temperature_button)
     Button mTemperatureButton;
-    @BindView(R.id.dashboard_humidity_button)
     Button mHumidityButton;
-    @BindView(R.id.dashboard_dew_point_button)
     Button mDewPointButton;
-    @BindView(R.id.dashboard_heat_index_button)
     Button mHeatIndexButton;
-    @BindView(R.id.dashboard_temperature_value)
     TextView mTemperatureValueTextView;
-    @BindView(R.id.dashboard_humidity_value)
     TextView mHumidityValueTextView;
-    @BindView(R.id.dashboard_dew_point_value)
     TextView mDewPointValueTextView;
-    @BindView(R.id.dashboard_heat_index_value)
     TextView mHeatIndexValueTextView;
-    @BindView(R.id.button_find_gadget)
     Button mFindGadgetButton;
 
     //Extracted attributes from the XML
-    @BindBool(R.bool.is_tablet)
     boolean IS_TABLET;
-    @BindString(R.string.unit_fahrenheit)
     String FAHRENHEIT_UNIT;
-    @BindString(R.string.unit_celsius)
     String CELSIUS_UNIT;
-    @BindString(R.string.unit_humidity)
     String HUMIDITY_UNIT;
-    @BindString(R.string.label_empty_t)
     String EMPTY_TEMPERATURE_LABEL;
-    @BindString(R.string.label_empty_rh)
     String EMPTY_HUMIDITY_LABEL;
-    @BindString(R.string.label_empty_heat_index)
     String EMPTY_HEAT_INDEX_LABEL;
-    @BindString(R.string.typeface_condensed)
     String TYPEFACE_CONDENSED_LOCATION;
-    @BindString(R.string.typeface_bold)
     String TYPEFACE_BOLD_LOCATION;
 
     //Temperature state
@@ -136,6 +116,28 @@ public class DashboardFragment extends ParentFragment implements RHTSensorListen
 
     //Connection Adapter
     private ConnectedDeviceAdapter mConnectedDeviceAdapter;
+    private Context mContext;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
+    public void onCreate(Bundle saveInstanceState) {
+        super.onCreate(saveInstanceState);
+
+        IS_TABLET = mContext.getResources().getBoolean(R.bool.is_tablet);
+        FAHRENHEIT_UNIT = mContext.getResources().getString(R.string.unit_fahrenheit);
+        CELSIUS_UNIT = mContext.getResources().getString(R.string.unit_celsius);
+        HUMIDITY_UNIT = mContext.getResources().getString(R.string.unit_humidity);
+        EMPTY_TEMPERATURE_LABEL = mContext.getResources().getString(R.string.label_empty_t);
+        EMPTY_HUMIDITY_LABEL = mContext.getResources().getString(R.string.label_empty_rh);
+        EMPTY_HEAT_INDEX_LABEL = mContext.getResources().getString(R.string.label_empty_heat_index);
+        TYPEFACE_CONDENSED_LOCATION = mContext.getResources().getString(R.string.typeface_condensed);
+        TYPEFACE_BOLD_LOCATION = mContext.getResources().getString(R.string.typeface_bold);
+    }
 
     private void updateListView() {
         if (isAdded()) {
@@ -162,8 +164,21 @@ public class DashboardFragment extends ParentFragment implements RHTSensorListen
                              @Nullable final Bundle savedInstanceState) {
         Log.i(TAG, "OnCreateView()");
         final View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
-        unbinder = ButterKnife.bind(this, view);
+
+        mTotalView = view.findViewById(R.id.dashboard_content_layout);
+        mConnectedDeviceView = view.findViewById(R.id.dashboard_connected_device_nested_list_view);
+        mTemperatureButton = view.findViewById(R.id.dashboard_temperature_button);
+        mHumidityButton = view.findViewById(R.id.dashboard_humidity_button);
+        mDewPointButton = view.findViewById(R.id.dashboard_dew_point_button);
+        mHeatIndexButton = view.findViewById(R.id.dashboard_heat_index_button);
+        mTemperatureValueTextView = view.findViewById(R.id.dashboard_temperature_value);
+        mHumidityValueTextView = view.findViewById(R.id.dashboard_humidity_value);
+        mDewPointValueTextView = view.findViewById(R.id.dashboard_dew_point_value);
+        mHeatIndexValueTextView = view.findViewById(R.id.dashboard_heat_index_value);
+        mFindGadgetButton = view.findViewById(R.id.button_find_gadget);
+
         mTotalView.requestFocus();
+
         return view;
     }
 
@@ -246,7 +261,6 @@ public class DashboardFragment extends ParentFragment implements RHTSensorListen
 
     private void initListView() {
         mConnectedDeviceAdapter = new ConnectedDeviceAdapter(getContext().getApplicationContext());
-
         mConnectedDeviceView.setAdapter(mConnectedDeviceAdapter);
         mConnectedDeviceView.setOnItemClickListener(new OnItemClickListener() {
             @Override

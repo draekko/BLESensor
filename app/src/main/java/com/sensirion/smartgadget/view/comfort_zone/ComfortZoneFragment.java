@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,13 +32,14 @@
 package com.sensirion.smartgadget.view.comfort_zone;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -64,96 +66,89 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import butterknife.BindInt;
-import butterknife.BindString;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 import static com.sensirion.smartgadget.utils.XmlFloatExtractor.getFloatValueFromId;
 
 /**
  * A fragment representing the ComfortZone view
  */
-public class ComfortZoneFragment extends ParentFragment implements OnTouchListener, RHTSensorListener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class ComfortZoneFragment extends ParentFragment 
+        implements 
+            OnTouchListener, 
+            RHTSensorListener, 
+            SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = ComfortZoneFragment.class.getSimpleName();
 
-    @BindInt(R.integer.comfort_zone_min_y_axis_value)
     int GRAPH_MIN_Y_VALUE;
-
-    @BindInt(R.integer.comfort_zone_max_y_axis_value)
     int GRAPH_MAX_Y_VALUE;
-
-    @BindInt(R.integer.comfort_zone_y_axis_grid_size)
     int GRAPH_Y_GRID_SIZE;
-
-    @BindInt(R.integer.comfort_zone_min_x_axis_value)
     int GRAPH_MIN_X_VALUE;
-
-    @BindInt(R.integer.comfort_zone_max_x_axis_value)
     int GRAPH_MAX_X_VALUE;
-
-    @BindInt(R.integer.comfort_zone_x_axis_grid_size_celsius)
     int GRAPH_X_GRID_SIZE_CELSIUS;
-
-    @BindString(R.string.graph_label_temperature_celsius)
     String GRAPH_X_LABEL_CELSIUS;
-
-    @BindString(R.string.graph_label_temperature_fahrenheit)
     String GRAPH_X_LABEL_FAHRENHEIT;
-
-    @BindView(R.id.plotview)
     XyPlotView mPlotView;
-
-    @BindView(R.id.textview_left)
     TextView mTextViewLeft;
-
-    @BindView(R.id.textview_top)
     TextView mTextViewTop;
-
-    @BindView(R.id.textview_right)
     TextView mTextViewRight;
-
-    @BindView(R.id.textview_bottom)
     TextView mTextViewBottom;
-
-    @BindView(R.id.tv_sensor_name)
     TextView mSensorNameTextView;
-
-    @BindView(R.id.text_amb_temp)
     TextView mSensorAmbientTemperatureTextView;
-
-    @BindView(R.id.text_rh)
     TextView mSensorRelativeHumidity;
-
-    @BindString(R.string.text_sensor_name_default)
     String DEFAULT_SENSOR_NAME;
-
-    @BindString(R.string.label_empty_t)
     String EMPTY_TEMPERATURE_STRING;
-
-    @BindString(R.string.label_empty_rh)
     String EMPTY_RELATIVE_HUMIDITY_STRING;
-
-    @BindView(R.id.parentframe)
     ViewGroup mParentFrame;
-
-    @BindString(R.string.char_percent)
     String PERCENTAGE_CHARACTER;
-
-    @BindInt(R.integer.comfort_zone_x_axis_grid_size_fahrenheit)
     int GRAPH_X_GRID_SIZE_FAHRENHEIT;
 
     private final Map<String, XyPoint> mActiveSensorViews = Collections.synchronizedMap(new LinkedHashMap<String, XyPoint>());
 
     private boolean mIsFahrenheit;
 
+    private Context mContext;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        GRAPH_MIN_Y_VALUE = mContext.getResources().getInteger(R.integer.comfort_zone_min_y_axis_value);
+        GRAPH_MAX_Y_VALUE = mContext.getResources().getInteger(R.integer.comfort_zone_max_y_axis_value);
+        GRAPH_Y_GRID_SIZE = mContext.getResources().getInteger(R.integer.comfort_zone_y_axis_grid_size);
+        GRAPH_MIN_X_VALUE = mContext.getResources().getInteger(R.integer.comfort_zone_min_x_axis_value);
+        GRAPH_MAX_X_VALUE = mContext.getResources().getInteger(R.integer.comfort_zone_max_x_axis_value);
+        GRAPH_X_GRID_SIZE_CELSIUS = mContext.getResources().getInteger(R.integer.comfort_zone_x_axis_grid_size_celsius);
+        GRAPH_X_GRID_SIZE_FAHRENHEIT = mContext.getResources().getInteger(R.integer.comfort_zone_x_axis_grid_size_fahrenheit);
+        GRAPH_X_LABEL_CELSIUS = mContext.getResources().getString(R.string.graph_label_temperature_celsius);
+        GRAPH_X_LABEL_FAHRENHEIT = mContext.getResources().getString(R.string.graph_label_temperature_fahrenheit);
+        DEFAULT_SENSOR_NAME = mContext.getResources().getString(R.string.text_sensor_name_default);
+        EMPTY_TEMPERATURE_STRING = mContext.getResources().getString(R.string.label_empty_t);
+        EMPTY_RELATIVE_HUMIDITY_STRING = mContext.getResources().getString(R.string.label_empty_rh);
+        PERCENTAGE_CHARACTER = mContext.getResources().getString(R.string.char_percent);
+    }
+
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_comfortzone, container, false);
-        unbinder = ButterKnife.bind(this, view);
+
+        mPlotView = view.findViewById(R.id.plotview);
+        mTextViewLeft = view.findViewById(R.id.textview_left);
+        mTextViewTop = view.findViewById(R.id.textview_top);
+        mTextViewRight = view.findViewById(R.id.textview_right);
+        mTextViewBottom = view.findViewById(R.id.textview_bottom);
+        mSensorNameTextView = view.findViewById(R.id.tv_sensor_name);
+        mSensorAmbientTemperatureTextView = view.findViewById(R.id.text_amb_temp);
+        mSensorRelativeHumidity = view.findViewById(R.id.text_rh);
+        mParentFrame = view.findViewById(R.id.parentframe);
+
         return view;
     }
 
@@ -237,7 +232,7 @@ public class ComfortZoneFragment extends ParentFragment implements OnTouchListen
         }
         final String address = model.getAddress();
         try {
-            final XyPoint sensorPoint = new XyPoint(getContext().getApplicationContext());
+            final XyPoint sensorPoint = new XyPoint(mContext.getApplicationContext());
             sensorPoint.setVisibility(View.INVISIBLE);
             sensorPoint.setTag(address);
             sensorPoint.setRadius(

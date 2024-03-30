@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +35,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -73,7 +74,6 @@ public class AboutDialog extends GenericDialog {
         }
 
         final String appName = getContext().getString(R.string.app_name);
-        final String appPlatform = getContext().getString(R.string.app_platform);
         final String copyright = getContext().getString(R.string.txt_about_char_copyright);
         final String sensirionAg = getContext().getString(R.string.about_sensirion_ag);
 
@@ -81,8 +81,6 @@ public class AboutDialog extends GenericDialog {
 
         final int deviceYear = Calendar.getInstance().get(Calendar.YEAR);
         aboutText.append(appName)
-                .append(" ")
-                .append(appPlatform)
                 .append(" ")
                 .append(versionName)
                 .append(System.getProperty("line.separator"))

@@ -1,1 +1,5 @@
 include ':app'
+include ':libble'
+include ':libsmartgadget'
+
+rootProject.name = "SmartGadget"

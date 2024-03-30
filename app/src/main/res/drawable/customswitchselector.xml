@@ -30,8 +30,8 @@
                 android:radius="15dp"/>
             <gradient
                 android:angle="90"
-                android:endColor="@color/sensirion_green"
-                android:startColor="@color/sensirion_green_darkened"/>
+                android:endColor="@color/blegadget_blue"
+                android:startColor="@color/blegadget_blue_darkened"/>
             <size
                 android:width="37dp"
                 android:height="37dp"/>
@@ -50,8 +50,8 @@
                 android:radius="15dp"/>
             <gradient
                 android:angle="90"
-                android:endColor="@color/sensirion_green"
-                android:startColor="@color/sensirion_green_darkened"/>
+                android:endColor="@color/blegadget_blue"
+                android:startColor="@color/blegadget_blue_darkened"/>
             <size
                 android:width="37dp"
                 android:height="37dp"/>

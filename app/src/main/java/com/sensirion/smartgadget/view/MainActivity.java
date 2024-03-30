@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,16 +37,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
+import androidx.drawerlayout.widget.DrawerLayout;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.util.Log;
@@ -81,55 +85,37 @@ import com.sensirion.smartgadget.view.device_management.ScanDeviceFragment;
 
 import java.util.Locale;
 
-import butterknife.BindBool;
-import butterknife.BindColor;
-import butterknife.BindString;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnPageChange;
-import butterknife.Optional;
-
-public class MainActivity extends FragmentActivity implements View.OnTouchListener, RHTSensorListener {
+public class MainActivity extends FragmentActivity
+        implements
+            View.OnTouchListener,
+            RHTSensorListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final int NO_REMOTE_INSTRUCTION = 0;
     protected int mRemoteInstruction;
 
     // Attributes only used in mobile devices.
     @Nullable
-    @BindView(R.id.view_pager)
     ViewPager mMobileViewPager;
     @Nullable
-    @BindView(R.id.section_tabs)
     LinearLayout mMobileTabLayout;
-    @BindBool(R.bool.is_tablet)
     boolean mIsTablet;
 
     //String resources
-    @BindString(R.string.no)
     String NEGATION_STRING;
-    @BindString(R.string.yes)
     String AFFIRMATION_STRING;
-    @BindString(R.string.confirmation_to_close_application)
     String CONFIRMATION_TO_CLOSE_APPLICATION_STRING;
-    @BindString(R.string.quit)
     String DO_YOU_WANT_TO_QUIT_STRING;
-    @BindString(R.string.connected_device)
     String CONNECTED_DEVICE_STRING;
-    @BindString(R.string.lost_connection_device)
     String LOST_DEVICE_CONNECTION;
-    @BindString(R.string.inphone_rht_sensor)
     String INPHONE_RHT_SENSOR_STRING;
 
     //Color resources
-    @BindColor(R.color.font_shadow)
     int FONT_SHADOW_COLOR;
 
     // Attributes used in tablet devices.
     @Nullable
-    @BindView(R.id.drawer_layout)
     DrawerLayout mTabletLeftMenuDrawer;
     @Nullable
-    @BindView(R.id.left_drawer)
     ListView mTabletLeftMenuListView;
 
     //Class attributes.
@@ -138,14 +124,47 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
     private int mPositionSelected = 0;
     private boolean mIsChildScreen = false;
     private boolean mUserPreferencesModified = false;
+
     @Nullable
     private Fragment mLastFragment = null;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        NEGATION_STRING = getResources().getString(R.string.no);
+        AFFIRMATION_STRING = getResources().getString(R.string.yes);
+        CONFIRMATION_TO_CLOSE_APPLICATION_STRING = getResources().getString(R.string.confirmation_to_close_application);
+        DO_YOU_WANT_TO_QUIT_STRING = getResources().getString(R.string.quit);
+        CONNECTED_DEVICE_STRING = getResources().getString(R.string.connected_device);
+        LOST_DEVICE_CONNECTION = getResources().getString(R.string.lost_connection_device);
+        INPHONE_RHT_SENSOR_STRING = getResources().getString(R.string.inphone_rht_sensor);
+
+        FONT_SHADOW_COLOR = getColor(R.color.font_shadow);
+
+        mIsTablet = getResources().getBoolean(R.bool.is_tablet);
+
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+
+        mMobileViewPager = findViewById(R.id.view_pager);
+        mMobileTabLayout = findViewById(R.id.section_tabs);
+
+        mMobileViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                onTabChanged(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
+
         final Context appContext = getApplicationContext();
         ManagerInitializer.initializeApplicationManagers(appContext);
         setScreenOrientation();
@@ -154,6 +173,19 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         if (!RHTSensorFacade.getInstance().hasInternalRHTSensor() &&
                 appSettings.isSmartGadgetRequirementDisplayed()) {
             (new SmartGadgetRequirementDialog(this)).show();
+        }
+
+        String PREMISSION_BLUETOOTH_CONNECT = "android.permission.BLUETOOTH_CONNECT";
+        String PREMISSION_BLUETOOTH_SCAN = "android.permission.BLUETOOTH_SCAN";
+        if (Build.VERSION.SDK_INT >= 31) {
+            if (ContextCompat.checkSelfPermission(this, PREMISSION_BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(this, PREMISSION_BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                this.requestPermissions(
+                        new String [] {
+                                PREMISSION_BLUETOOTH_SCAN,
+                                PREMISSION_BLUETOOTH_CONNECT
+                        }, 0x1000);
+            }
         }
     }
 
@@ -190,7 +222,7 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
      */
     private void initTabletLeftBar() {
         if (mTabletLeftMenuListView == null) {
-            Log.e(TAG, "changeTabletSection -> mTabletLeftMenuListView is not initialized (HINT -> ButterKnife.bind(this))");
+            Log.e(TAG, "changeTabletSection -> mTabletLeftMenuListView is not initialized");
             return;
         }
         mSectionsPagerAdapter = new SectionManagerTablet(getSupportFragmentManager());
@@ -211,7 +243,7 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
 
     private void changeTabletSection(final int position, final boolean withTransition) {
         if (mTabletLeftMenuDrawer == null || mTabletLeftMenuListView == null) {
-            Log.e(TAG, "toggleTabletMenu -> Tablet Views are not initialized (HINT -> ButterKnife.bind(this))");
+            Log.e(TAG, "toggleTabletMenu -> Tablet Views are not initialized");
             return;
         }
         if (position != mPositionSelected || mIsChildScreen || !withTransition) {
@@ -250,7 +282,7 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
             return;
         }
         if (mTabletLeftMenuDrawer == null || mTabletLeftMenuListView == null) {
-            Log.e(TAG, "toggleTabletMenu -> Tablet Views are not initialized (HINT -> ButterKnife.bind(this))");
+            Log.e(TAG, "toggleTabletMenu -> Tablet Views are not initialized");
             return;
         }
         runOnUiThread(new Runnable() {
@@ -294,8 +326,6 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         addTabsToMobileActionBar();
     }
 
-    @Optional
-    @OnPageChange(R.id.view_pager)
     void onTabChanged(final int position) {
         if (mMobileViewPager == null) {
             Log.e(TAG, "initMobileActionBarWithTabs -> The mobile View Pager is null. (HINT -> ButterKnife.bind(this)");
@@ -320,7 +350,7 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
             tabLayout.addView(createMobileActionBarTab(tabLayout, i));
         }
-        tabLayout.getChildAt(0).setBackground(getResources().getDrawable(R.drawable.section_tab_selected));
+        tabLayout.getChildAt(0).setBackground(this.getDrawable(R.drawable.section_tab_selected));
         tabLayout.refreshDrawableState();
     }
 
@@ -377,9 +407,9 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
     private void updateMobileTabState(final int newPosition) {
         final LinearLayout tabLayout = (LinearLayout) findViewById(R.id.section_tabs);
         final View oldChild = tabLayout.getChildAt(mPositionSelected);
-        oldChild.setBackground(getResources().getDrawable(R.drawable.section_tab_selector));
+        oldChild.setBackground(this.getDrawable(R.drawable.section_tab_selector));
         final View child = tabLayout.getChildAt(newPosition);
-        child.setBackground(getResources().getDrawable(R.drawable.section_tab_selected));
+        child.setBackground(this.getDrawable(R.drawable.section_tab_selected));
         mPositionSelected = newPosition;
     }
 
@@ -552,16 +582,19 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
     }
 
     private void initActionBar() {
-        final SpannableString title = new SpannableString("B");
+        //final SpannableString title = new SpannableString("B");
+        final SpannableString title = new SpannableString("BLE Sensor");
 
         final TypedValue actionbarTittleTextSize = new TypedValue();
         getResources().getValue(R.dimen.actionbar_title_size, actionbarTittleTextSize, true);
+        /*
         title.setSpan(
                 new ApplicationHeaderGenerator(this, "SensirionSimple.ttf",
                         actionbarTittleTextSize.getFloat(), FONT_SHADOW_COLOR
                 ), 0, title.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         );
+         */
         if (getActionBar() != null) {
             getActionBar().setTitle(title);
             getActionBar().setDisplayShowHomeEnabled(false);

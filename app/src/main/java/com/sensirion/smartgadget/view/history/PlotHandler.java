@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,14 +33,12 @@ package com.sensirion.smartgadget.view.history;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 
-import com.androidplot.Plot;
 import com.androidplot.ui.Anchor;
 import com.androidplot.ui.HorizontalPositioning;
 import com.androidplot.ui.Size;
@@ -63,11 +62,6 @@ import java.text.Format;
 import java.util.LinkedList;
 import java.util.List;
 
-import butterknife.BindInt;
-import butterknife.BindString;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class PlotHandler {
 
     // Class TAG
@@ -75,33 +69,20 @@ public class PlotHandler {
     private static final String TAG = PlotHandler.class.getSimpleName();
 
     // Injected XML views
-    @BindView(R.id.history_fragment_plot)
     XYPlot mViewPlot;
 
     // Extracted constants from the XML resources
-    @BindString(R.string.graph_label_elapsed_time)
     String ELAPSED_TIME_STRING;
-    @BindString(R.string.graph_label_temperature)
     String TEMPERATURE_STRING;
-    @BindInt(R.integer.history_graph_view_num_default_range_labels)
     int DEFAULT_NUMBER_RANGE_LABELS;
-    @BindString(R.string.graph_label_temperature_fahrenheit)
     String TEMPERATURE_LABEL_IN_FAHRENHEIT;
-    @BindString(R.string.graph_label_temperature_celsius)
     String TEMPERATURE_LABEL_IN_CELSIUS;
-    @BindString(R.string.graph_label_relative_humidity)
     String RELATIVE_HUMIDITY_LABEL;
-    @BindString(R.string.graph_label_temperature)
     String TEMPERATURE_LABEL;
-    @BindInt(R.integer.history_graph_min_humidity_range)
     int MIN_PLOT_HUMIDITY;
-    @BindInt(R.integer.history_graph_max_humidity_range)
     int MAX_PLOT_HUMIDITY;
-    @BindInt(R.integer.history_graph_min_separation)
     int MIN_PLOT_SEPARATION;
-    @BindInt(R.integer.history_graph_threshold_time_representation_ms)
     int THRESHOLD_TIME_REPRESENTATION_MS;
-    @BindInt(R.integer.history_graph_gap_resolution_multiplier)
     int GAP_THRESHOLD_RESOLUTION_MULTIPLIER;
 
     // Plot State
@@ -118,12 +99,25 @@ public class PlotHandler {
     @NonNull
     private HistoryIntervalType mLastInterval;
 
-    public PlotHandler(@NonNull final View historyView,
+    public PlotHandler(Context context,
+                       @NonNull final View historyView,
                        @NonNull final HistoryIntervalType defaultInterval,
                        @NonNull final HistoryUnitType defaultUnitType) {
 
-        ButterKnife.bind(this, historyView);
+        DEFAULT_NUMBER_RANGE_LABELS = context.getResources().getInteger(R.integer.history_graph_view_num_default_range_labels);
+        MIN_PLOT_HUMIDITY = context.getResources().getInteger(R.integer.history_graph_min_humidity_range);
+        MAX_PLOT_HUMIDITY = context.getResources().getInteger(R.integer.history_graph_max_humidity_range);
+        MIN_PLOT_SEPARATION = context.getResources().getInteger(R.integer.history_graph_min_separation);
+        THRESHOLD_TIME_REPRESENTATION_MS = context.getResources().getInteger(R.integer.history_graph_threshold_time_representation_ms);
+        GAP_THRESHOLD_RESOLUTION_MULTIPLIER = context.getResources().getInteger(R.integer.history_graph_gap_resolution_multiplier);
+        ELAPSED_TIME_STRING = context.getResources().getString(R.string.graph_label_elapsed_time);
+        TEMPERATURE_STRING = context.getResources().getString(R.string.graph_label_temperature);
+        TEMPERATURE_LABEL_IN_FAHRENHEIT = context.getResources().getString(R.string.graph_label_temperature_fahrenheit);
+        TEMPERATURE_LABEL_IN_CELSIUS = context.getResources().getString(R.string.graph_label_temperature_celsius);
+        RELATIVE_HUMIDITY_LABEL = context.getResources().getString(R.string.graph_label_relative_humidity);
+        TEMPERATURE_LABEL = context.getResources().getString(R.string.graph_label_temperature);
 
+        mViewPlot = historyView.findViewById(R.id.history_fragment_plot);
         mViewPlot.setDomainStep(StepMode.SUBDIVIDE, defaultInterval.getNumberDomainElements());
         mIsFahrenheit = Settings.getInstance().isTemperatureUnitFahrenheit();
 

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017, Sensirion AG
+ * Copyright (c) 2024, Draekko RAND
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,12 +33,15 @@ package com.sensirion.smartgadget.view.preference;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,11 +63,6 @@ import com.sensirion.smartgadget.view.MainActivity;
 import com.sensirion.smartgadget.view.device_management.ScanDeviceFragment;
 import com.sensirion.smartgadget.view.preference.adapter.PreferenceAdapter;
 
-import butterknife.BindBool;
-import butterknife.BindString;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class SmartgadgetPreferenceFragment extends ParentListFragment implements RHTSensorListener {
 
     public static final int REMOTE_INSTRUCTION_OPEN_SCAN_FRAGMENT = 1;
@@ -72,36 +71,22 @@ public class SmartgadgetPreferenceFragment extends ParentListFragment implements
     @NonNull
     private static final String TAG = SmartgadgetPreferenceFragment.class.getSimpleName();
 
-    @BindView(R.id.button_find_gadget)
     Button mFindGadgetButton;
 
-    @BindBool(R.bool.is_tablet)
     boolean IS_TABLET;
 
     // XML resources
-    @BindString(R.string.typeface_condensed)
     String CONDENSED_TYPEFACE;
-    @BindString(R.string.typeface_bold)
     String BOLD_TYPEFACE;
-    @BindString(R.string.label_season)
     String SEASON_PREFERENCE_LABEL;
-    @BindString(R.string.label_smart_gadgets)
     String DEVICES_PREFERENCE_LABEL;
-    @BindString(R.string.label_glossary)
     String GLOSSARY_PREFERENCE_LABEL;
-    @BindString(R.string.header_connections)
     String CONNECTION_HEADER;
-    @BindString(R.string.label_temperature_unit)
     String TEMPERATURE_PREFERENCE_LABEL;
-    @BindString(R.string.header_user_prefs)
     String USER_PREFERENCES_HEADER;
-    @BindString(R.string.label_application_requirements)
     String APPLICATION_REQUIREMENTS_LABEL;
-    @BindString(R.string.label_privacy_policy)
     String PRIVACY_POLICY_LABEL;
-    @BindString(R.string.label_about)
     String ABOUT_PREFERENCE_LABEL;
-    @BindString(R.string.header_app_information)
     String APP_INFORMATION_HEADER;
 
     // Layout Adapters
@@ -111,6 +96,33 @@ public class SmartgadgetPreferenceFragment extends ParentListFragment implements
     private PreferenceAdapter mConnectionsAdapter;
     @Nullable
     private PreferenceAdapter mUserPreferencesAdapter;
+
+    private Context mContext;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        IS_TABLET = mContext.getResources().getBoolean(R.bool.is_tablet);
+        CONDENSED_TYPEFACE = mContext.getResources().getString(R.string.typeface_condensed);
+        BOLD_TYPEFACE = mContext.getResources().getString(R.string.typeface_bold);
+        SEASON_PREFERENCE_LABEL = mContext.getResources().getString(R.string.label_season);
+        DEVICES_PREFERENCE_LABEL = mContext.getResources().getString(R.string.label_smart_gadgets);
+        GLOSSARY_PREFERENCE_LABEL = mContext.getResources().getString(R.string.label_glossary);
+        CONNECTION_HEADER = mContext.getResources().getString(R.string.header_connections);
+        TEMPERATURE_PREFERENCE_LABEL = mContext.getResources().getString(R.string.label_temperature_unit);
+        USER_PREFERENCES_HEADER = mContext.getResources().getString(R.string.header_user_prefs);
+        APPLICATION_REQUIREMENTS_LABEL = mContext.getResources().getString(R.string.label_application_requirements);
+        PRIVACY_POLICY_LABEL = mContext.getResources().getString(R.string.label_privacy_policy);
+        ABOUT_PREFERENCE_LABEL = mContext.getResources().getString(R.string.label_about);
+        APP_INFORMATION_HEADER = mContext.getResources().getString(R.string.header_app_information);
+    }
 
     @Override
     public void onResume() {
@@ -137,11 +149,12 @@ public class SmartgadgetPreferenceFragment extends ParentListFragment implements
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_smartgadget_list, container, false);
-        ButterKnife.bind(this, view);
+        final Typeface typefaceBold = Typeface.createFromAsset(mContext.getAssets(), BOLD_TYPEFACE);
+
+        mFindGadgetButton = view.findViewById(R.id.button_find_gadget);
+
         initPreferencesList();
 
-        final AssetManager assets = getContext().getAssets();
-        final Typeface typefaceBold = Typeface.createFromAsset(assets, BOLD_TYPEFACE);
         mFindGadgetButton.setTypeface(typefaceBold);
         if (IS_TABLET) {
             mFindGadgetButton.setVisibility(View.GONE);
@@ -185,7 +198,7 @@ public class SmartgadgetPreferenceFragment extends ParentListFragment implements
                                          @Nullable final ViewGroup parent) {
                 TextView listItemHeader = (TextView) convertView;
                 if (listItemHeader == null) {
-                    final AssetManager assets = getContext().getAssets();
+                    final AssetManager assets = mContext.getAssets();
                     final Typeface typefaceBold = Typeface.createFromAsset(assets, BOLD_TYPEFACE);
                     listItemHeader = (TextView) View.inflate(getParent(), R.layout.listitem_scan_header, null);
                     listItemHeader.setTypeface(typefaceBold);
@@ -216,7 +229,7 @@ public class SmartgadgetPreferenceFragment extends ParentListFragment implements
      */
 
     private void initConnectionPreferenceAdapter() {
-        final AssetManager assets = getContext().getAssets();
+        final AssetManager assets = mContext.getAssets();
         final Typeface typefaceCondensed = Typeface.createFromAsset(assets, CONDENSED_TYPEFACE);
         mConnectionsAdapter = new PreferenceAdapter(typefaceCondensed);
         refreshPreferenceAdapter();
@@ -265,7 +278,7 @@ public class SmartgadgetPreferenceFragment extends ParentListFragment implements
      * ************************************************************************
      */
     private void initUserPreferenceAdapter() {
-        final AssetManager assets = getContext().getAssets();
+        final AssetManager assets = mContext.getAssets();
         final Typeface typefaceCondensed = Typeface.createFromAsset(assets, CONDENSED_TYPEFACE);
         mUserPreferencesAdapter = new PreferenceAdapter(typefaceCondensed);
         refreshUserPreferenceAdapter();
@@ -352,7 +365,7 @@ public class SmartgadgetPreferenceFragment extends ParentListFragment implements
      */
     @NonNull
     private PreferenceAdapter getAppInformationAdapter() {
-        final AssetManager assets = getContext().getAssets();
+        final AssetManager assets = mContext.getAssets();
         final Typeface typefaceCondensed = Typeface.createFromAsset(assets, CONDENSED_TYPEFACE);
         final PreferenceAdapter appInformationAdapter = new PreferenceAdapter(typefaceCondensed);
         //  addGlossaryAdapter(appInformationAdapter);
