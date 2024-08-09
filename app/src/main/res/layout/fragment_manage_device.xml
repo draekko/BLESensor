@@ -118,7 +118,7 @@
                 android:layout_gravity="end"
                 android:layout_marginEnd="10dp"
                 android:checked="true"
-                android:enabled="false"
+                android:enabled="true"
                 android:textOff="@string/label_off"
                 android:textOn="@string/label_on"
                 android:textSize="14sp"

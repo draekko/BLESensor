@@ -31,6 +31,9 @@
  */
 package com.sensirion.smartgadget.utils;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 public class Converter {
 
     public static float convertToC(final float tempInFahrenheit) {
@@ -52,6 +55,49 @@ public class Converter {
 
     public static float calculateHeatIndexFahrenheit(final float relativeHumidity, final float ambientTemperatureFahrenheit) {
         return HeatIndexCalculator.calcHeatIndexInFahrenheit(relativeHumidity, ambientTemperatureFahrenheit);
+    }
+
+    public static float calculateHeatIndexCelsiusOld(final float relativeHumidity, final float ambientTemperatureCelsius) {
+        return HeatIndexCalculator.calcHeatIndexInCelsiusOld(relativeHumidity, ambientTemperatureCelsius);
+    }
+
+    public static float calculateHeatIndexFahrenheitOld(final float relativeHumidity, final float ambientTemperatureFahrenheit) {
+        return HeatIndexCalculator.calcHeatIndexInFahrenheitOld(relativeHumidity, ambientTemperatureFahrenheit);
+    }
+
+    /**
+     * @param rh relative humidity
+     * @param t ambient temperature in Fahrenheit.
+     * @return Humidex.
+     */
+    public static float calculateHumidexFahrenheit(final float rh, final float t) {
+        float t_celsius = (t - 32)  / 1.8f;
+        float t_kelvin = t_celsius + 273;
+        float eTs = (float)Math.pow(10, ((-2937.4f / t_kelvin) - 4.9283f * Math.log(t_kelvin) / 2.302585092994046f + 23.5471f));
+        float eTd = eTs * rh /100;
+        float humidex = Math.round(t_celsius + ((eTd - 10) * 5f / 9f));
+        float tfh = Math.round(((9.0f/5.0f) * humidex + 32.0f));
+        if (tfh < t) {
+            tfh = t;
+        }
+        return tfh;
+    }
+
+    /**
+     * @param rh relative humidity
+     * @param t ambient temperature in Celsius.
+     * @return Humidex.
+     */
+    public static float calculateHumidexCelsius(final float rh, final float t) {
+        float t_kelvin = t + 273;
+        float eTs = (float)Math.pow(10, ((-2937.4f / t_kelvin) - 4.9283f * Math.log(t_kelvin) / 2.302585092994046f + 23.5471f));
+        float eTd = eTs * rh /100;
+        float tf = Math.round((1.8f * t + 32.0f)); // temp in F
+        float humidex=Math.round(t + ((eTd - 10) * 5f / 9f));
+        if (humidex < t) {
+            humidex = t;
+        }
+        return humidex;
     }
 
     private static class HeatIndexCalculator {
@@ -104,14 +150,30 @@ public class Converter {
          * comes from Stull, Richard (2000). Meteorology for Scientists and
          * Engineers, Second Edition. Brooks/Cole. p. 60. ISBN 9780534372149.
          *
+         * @param relativeHumidity relative humidity
+         * @param tempInCelsius    ambient temperature in Celsius.
+         * @return Heat Index.
+         */
+        private static float calcHeatIndexInCelsiusOld(final float relativeHumidity, final float tempInCelsius) {
+            final float tempInFahrenheit = Converter.convertToF(tempInCelsius);
+            final float heatIndexInFahrenheit = calcHeatIndexInFahrenheitOld(relativeHumidity, tempInFahrenheit);
+            return Converter.convertToC(heatIndexInFahrenheit);
+        }
+
+        /**
+         * This method obtains the heat index of a temperature and humidity
+         * using the formula from: http://en.wikipedia.org/wiki/Heat_index that
+         * comes from Stull, Richard (2000). Meteorology for Scientists and
+         * Engineers, Second Edition. Brooks/Cole. p. 60. ISBN 9780534372149.
+         *
          * @param h relative humidity
          * @param t ambient temperature in Fahrenheit.
          * @return Heat Index.
          */
-        private static float calcHeatIndexInFahrenheit(final float h, final float t) {
+        private static float calcHeatIndexInFahrenheitOld(final float rh, final float t) {
 
             //Checks if the temperature and the humidity makes sense.
-            if (t > UPPER_BOUNDARY_FORMULA_FAHRENHEIT || h < 0 || h > 100) {
+            if (t > UPPER_BOUNDARY_FORMULA_FAHRENHEIT || rh < 0 || rh > 100) {
                 return Float.NaN;
             } else if (t < LOW_BOUNDARY_FORMULA_FAHRENHEIT) {
                 // use actual temperature for heat index if below LOW_BOUNDARY_FORMULA_FAHRENHEIT
@@ -121,25 +183,51 @@ public class Converter {
             //Prepares values for improving the readability of the method.
             final float t2 = t * t;
             final float t3 = t2 * t;
-            final float h2 = h * h;
-            final float h3 = h2 * h;
+            final float h2 = rh * rh;
+            final float h3 = h2 * rh;
 
             return c1
                     + c2 * t
-                    + c3 * h
-                    + c4 * t * h
+                    + c3 * rh
+                    + c4 * t * rh
                     + c5 * t2
                     + c6 * h2
-                    + c7 * t2 * h
+                    + c7 * t2 * rh
                     + c8 * t * h2
                     + c9 * t2 * h2
                     + c10 * t3
                     + c11 * h3
-                    + c12 * t3 * h
+                    + c12 * t3 * rh
                     + c13 * t * h3
                     + c14 * t3 * h2
                     + c15 * t2 * h3
                     + c16 * t3 * h3;
+        }
+
+        /**
+         * Utility class to calculate the heat index, given a Fahrenheit temperature (F) and relative humidity (rh).
+         *
+         * See http://www.srh.noaa.gov/images/ffc/pdf/ta_htindx.PDF for calculation details, noting that there is a
+         * degree of variance in result to be expected since the equation is an approximation derived from regression analysis.
+         *
+         * Formula from from
+         * https://github.com/USDepartmentofLabor/Calculate-Heat-Index-Java/blob/master/src/main/java/gov/dol/CalculateHeatIndex.java
+         */
+        public static final String RESULT_FORMAT = "#.#";
+        private static float calcHeatIndexInFahrenheit(final float rh, final float t) {
+            double Hindex;
+
+            Hindex = -42.379 + 2.04901523 * t + 10.14333127 * rh;
+            Hindex = Hindex - 0.22475541 * t * rh - 6.83783 * Math.pow(10, -3) * t * t;
+            Hindex = Hindex - 5.481717 * Math.pow(10, -2) * rh * rh;
+            Hindex = Hindex + 1.22874 * Math.pow(10, -3) * t * t * rh;
+            Hindex = Hindex + 8.5282 * Math.pow(10, -4) * t * rh * rh;
+            Hindex = Hindex - 1.99 * Math.pow(10, -6) * t * t * rh * rh;
+
+            DecimalFormat df = new DecimalFormat(RESULT_FORMAT);
+            df.setRoundingMode(RoundingMode.HALF_UP);
+
+            return Float.parseFloat(df.format(Hindex));
         }
     }
 }

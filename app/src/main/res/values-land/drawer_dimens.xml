@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="drawer_list_item_min_height">47dp</dimen>
-    <dimen name="drawer_list_item_padding_lr">17dp</dimen>
-    <dimen name="drawer_list_item_text_size">21sp</dimen>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <dimen name="drawer_list_item_min_height" tools:ignore="MissingDefaultResource">47dp</dimen>
+    <dimen name="drawer_list_item_padding_lr" tools:ignore="MissingDefaultResource">17dp</dimen>
+    <dimen name="drawer_list_item_text_size" tools:ignore="MissingDefaultResource">21sp</dimen>
 </resources>

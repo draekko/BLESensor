@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- GLOBAL MARGINS -->
     <dimen name="dashboard_padding">10dp</dimen>
     <dimen name="dashboard_lateral_margin">1dp</dimen>
@@ -10,7 +10,7 @@
     <!-- BUTTON MARGINS -->
     <dimen name="dashboard_button_padding_left">2dp</dimen>
     <dimen name="dashboard_button_margin_top">10dp</dimen>
-    <dimen name="dashboard_button_text_margin_left">198dp</dimen>
+    <dimen name="dashboard_button_text_margin_left" tools:ignore="MissingDefaultResource">198dp</dimen>
     <dimen name="dashboard_button_text_margin_bottom">17dp</dimen>
 
     <!-- BUTTON TEXT SIZE -->

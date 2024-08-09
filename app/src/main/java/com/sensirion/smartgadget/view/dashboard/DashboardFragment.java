@@ -83,6 +83,7 @@ public class DashboardFragment extends ParentFragment
     private static final int BUTTON_STATE_HUMIDITY = 1;
     private static final int BUTTON_STATE_DEW_POINT = 2;
     private static final int BUTTON_STATE_HEAT_INDEX = 3;
+    private static final int BUTTON_STATE_HUMIDEX = 4;
 
     //BUTTON VALUE FORMAT
     private static final String BUTTON_VALUE_FORMAT = "%s%s %s";
@@ -94,10 +95,12 @@ public class DashboardFragment extends ParentFragment
     Button mHumidityButton;
     Button mDewPointButton;
     Button mHeatIndexButton;
+    Button mHumidexButton;
     TextView mTemperatureValueTextView;
     TextView mHumidityValueTextView;
     TextView mDewPointValueTextView;
     TextView mHeatIndexValueTextView;
+    TextView mHumidexValueTextView;
     Button mFindGadgetButton;
 
     //Extracted attributes from the XML
@@ -171,10 +174,12 @@ public class DashboardFragment extends ParentFragment
         mHumidityButton = view.findViewById(R.id.dashboard_humidity_button);
         mDewPointButton = view.findViewById(R.id.dashboard_dew_point_button);
         mHeatIndexButton = view.findViewById(R.id.dashboard_heat_index_button);
+        mHumidexButton = view.findViewById(R.id.dashboard_humidex_button);
         mTemperatureValueTextView = view.findViewById(R.id.dashboard_temperature_value);
         mHumidityValueTextView = view.findViewById(R.id.dashboard_humidity_value);
         mDewPointValueTextView = view.findViewById(R.id.dashboard_dew_point_value);
         mHeatIndexValueTextView = view.findViewById(R.id.dashboard_heat_index_value);
+        mHumidexValueTextView = view.findViewById(R.id.dashboard_humidex_value);
         mFindGadgetButton = view.findViewById(R.id.button_find_gadget);
 
         mTotalView.requestFocus();
@@ -221,6 +226,7 @@ public class DashboardFragment extends ParentFragment
         mHumidityValueTextView.setTypeface(typefaceBold);
         mDewPointValueTextView.setTypeface(typefaceBold);
         mHeatIndexValueTextView.setTypeface(typefaceBold);
+        mHumidexValueTextView.setTypeface(typefaceBold);
 
         final SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
@@ -240,6 +246,10 @@ public class DashboardFragment extends ParentFragment
         mHeatIndexButton.setTypeface(typefaceNormal);
         prefs.edit().putInt(String.valueOf(mHeatIndexButton.getId()), BUTTON_STATE_HEAT_INDEX).commit();
         addButtonListener(mHeatIndexButton);
+
+        mHumidexButton.setTypeface(typefaceNormal);
+        prefs.edit().putInt(String.valueOf(mHumidexButton.getId()), BUTTON_STATE_HUMIDEX).commit();
+        addButtonListener(mHumidexButton);
 
         mFindGadgetButton.setTypeface(typefaceBold);
         if (IS_TABLET) {
@@ -351,6 +361,7 @@ public class DashboardFragment extends ParentFragment
                 mHumidityValueTextView.setText(EMPTY_HUMIDITY_LABEL);
                 mDewPointValueTextView.setText(EMPTY_TEMPERATURE_LABEL);
                 mHeatIndexValueTextView.setText(EMPTY_TEMPERATURE_LABEL);
+                mHumidexValueTextView.setText(EMPTY_TEMPERATURE_LABEL);
             }
         });
     }
@@ -380,6 +391,7 @@ public class DashboardFragment extends ParentFragment
                         changeButtonValue(mHumidityButton, mHumidityValueTextView);
                         changeButtonValue(mDewPointButton, mDewPointValueTextView);
                         changeButtonValue(mHeatIndexButton, mHeatIndexValueTextView);
+                        changeButtonValue(mHumidexButton, mHumidexValueTextView);
                     }
                 }
 
@@ -419,15 +431,29 @@ public class DashboardFragment extends ParentFragment
                         case BUTTON_STATE_HEAT_INDEX:
                             final float heatIndex;
                             if (mIsFahrenheit) {
-                                heatIndex = Converter.calculateHeatIndexFahrenheit(humidity, Converter.convertToF(temperature));
+                                heatIndex = Converter.calculateHeatIndexFahrenheitOld(humidity, Converter.convertToF(temperature));
                             } else {
-                                heatIndex = Converter.calculateHeatIndexCelsius(humidity, temperature);
+                                heatIndex = Converter.calculateHeatIndexCelsiusOld(humidity, temperature);
                             }
                             if (Float.isNaN(heatIndex)) {
                                 textView.setText(String.format(" %s", EMPTY_HEAT_INDEX_LABEL));
                             } else {
                                 signGap = heatIndex < 0 ? "" : " ";
                                 textView.setText(String.format(BUTTON_VALUE_FORMAT, signGap, nf.format(heatIndex), unit));
+                            }
+                            break;
+                        case BUTTON_STATE_HUMIDEX:
+                            final float humidex;
+                            if (mIsFahrenheit) {
+                                humidex = Converter.calculateHumidexFahrenheit(humidity, Converter.convertToF(temperature));
+                            } else {
+                                humidex = Converter.calculateHumidexCelsius(humidity, temperature);
+                            }
+                            if (Float.isNaN(humidex)) {
+                                textView.setText(String.format(" %s", EMPTY_HEAT_INDEX_LABEL));
+                            } else {
+                                signGap = humidex < 0 ? "" : " ";
+                                textView.setText(String.format(BUTTON_VALUE_FORMAT, signGap, nf.format(humidex), unit));
                             }
                             break;
                         default:

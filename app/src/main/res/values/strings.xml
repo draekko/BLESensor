@@ -87,6 +87,7 @@
     <string name="label_rh">Humidity</string>
     <string name="label_dp">Dew point</string>
     <string name="label_hi">Heat index</string>
+    <string name="label_humidex">Humidex</string>
     <string name="text_sensor_name_default">no sensor</string>
     <!-- '-.-º'-->
     <string name="text_amb_temp_default">\u002D\u002D.\u002D \u00B0</string>

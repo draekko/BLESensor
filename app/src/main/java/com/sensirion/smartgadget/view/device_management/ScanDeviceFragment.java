@@ -31,17 +31,23 @@
  */
 package com.sensirion.smartgadget.view.device_management;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -78,8 +84,8 @@ public class ScanDeviceFragment extends ParentListFragment implements HumiGadget
     private static final String TAG = ScanDeviceFragment.class.getSimpleName();
 
     private static final int TIME_MS = 1000;
-    private static final int SCAN_DISCOVERY_TIME_MS = 10 * TIME_MS;
-    private static final int CONNECTING_DIALOG_DISMISS_TIME_MS = 2 * TIME_MS;
+    private static final int SCAN_DISCOVERY_TIME_MS = 30 * TIME_MS;
+    private static final int CONNECTING_DIALOG_DISMISS_TIME_MS = 6 * TIME_MS;
 
     // Resources extracted from the resources folder
     String CONNECTED_STRING;
@@ -249,27 +255,24 @@ public class ScanDeviceFragment extends ParentListFragment implements HumiGadget
         handleScanningInfoVisibility(false);
     }
 
+    @SuppressLint("MissingPermission")
     private boolean unbindGadgetIfBoundByDevice(final GadgetModel gadget) {
-        try {
-            final BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();
-            final Set<BluetoothDevice> bondedDevices = defaultAdapter.getBondedDevices();
-            for (final BluetoothDevice device : bondedDevices) {
-                if (gadget.getAddress().equals(device.getAddress())) {
-                    Log.d(TAG, device.getAddress() + " bound in device settings... will unbind");
-                    try {
-                        Method m = device.getClass()
-                                  .getMethod("removeBond", (Class[]) null);
-                        m.invoke(device, (Object[]) null);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Failed to unbind from gadget");
-                        return false;
-                    }
+        final BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();
+        final Set<BluetoothDevice> bondedDevices = defaultAdapter.getBondedDevices();
+        for (final BluetoothDevice device : bondedDevices) {
+            if (gadget.getAddress().equals(device.getAddress())) {
+                Log.d(TAG, device.getAddress() + " bound in device settings... will unbind");
+                try {
+                    Method m = device.getClass()
+                            .getMethod("removeBond", (Class[]) null);
+                    m.invoke(device, (Object[]) null);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to unbind from gadget");
+                    return false;
                 }
             }
-            return true;
-        } catch (SecurityException e) {
-            return false;
         }
+        return true;
     }
 
     @Override

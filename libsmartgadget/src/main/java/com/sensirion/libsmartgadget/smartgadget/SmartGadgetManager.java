@@ -1,5 +1,6 @@
 package com.sensirion.libsmartgadget.smartgadget;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
@@ -318,14 +319,12 @@ class SmartGadgetManager extends BroadcastReceiver implements GadgetManager, Ble
             mGadgetManagerListener.onGadgetDiscoveryFinished();
         }
 
+        @SuppressLint("MissingPermission")
         void notifyScanResult(final ScanResult result) {
-            try {
-                final SmartGadget smartGadget = new SmartGadget(SmartGadgetManager.this,
+            final SmartGadget smartGadget = new SmartGadget(SmartGadgetManager.this,
                     mGadgetServiceFactory, result.getDevice().getName(),
                     result.getDevice().getAddress());
-                mGadgetManagerListener.onGadgetDiscovered(smartGadget, result.getRssi());
-            } catch (SecurityException e) {
-            }    
+            mGadgetManagerListener.onGadgetDiscovered(smartGadget, result.getRssi());
         }
     }
 
